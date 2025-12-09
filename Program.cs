@@ -1,14 +1,22 @@
 namespace server;
 
+using dotenv.net;
+using Microsoft.EntityFrameworkCore;
+using server.Models;
+
 public class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        DotEnv.Load(new DotEnvOptions(probeForEnv: true));
+
+        var sqlString = Environment.GetEnvironmentVariable("CANCHIDB") ?? throw new Exception("Failed to connect...");
 
         builder.Services.AddControllers();
+
+        builder.Services.AddDbContext<CanChiDbContext>(options => options.UseMySQL(sqlString));
 
         builder.Services.AddSwaggerGen();
 
